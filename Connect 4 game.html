@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head></head>
+        
+        <title>Connect 4</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+       
+        <meta charset="UTF-8">
+        <style>
+            @keyframes fadeout{
+                0%{opacity:100%}
+                100%{opacity:0%}
+            }
+            @keyframes fall6red{
+                0%{transform:translateY(-400px);background:red;}
+                30%{transform:translateY(0px);background:red;} 
+                35%{transform:translateY(-30px);background:red;} 
+                45%{transform:translateY(0px);background:red;}  
+                100%{transform:translateY(0px);background:red;}
+            }
+            @keyframes fall6yellow{
+                0%{transform:translateY(-400px);background:yellow;}
+                30%{transform:translateY(0px);background:yellow;} 
+                35%{transform:translateY(-30px);background:yellow;} 
+                45%{transform:translateY(0px);background:yellow;}  
+                100%{transform:translateY(0px);background:yellow;}
+            }
+            
+            #playerBoard{
+                border:1px solid black;
+                width:500px;
+                display:grid;
+                justify-content: space-evenly;
+                column-gap: 10px;
+                padding:20px;
+                margin:auto;
+                grid-template-columns: auto auto auto auto auto auto auto;
+                margin-top:50px;
+                background:linear-gradient(52deg, rgba(160,227,246,1) 0%, rgba(69,152,230,1) 100%);
+            }
+           
+            .num{
+                width:50px;
+                height:50px;
+                border-radius:50%;
+                border:2px solid black;
+                margin-bottom: 5px;;
+                background:white;
+            }
+           
+            .num:hover{
+                cursor: pointer;
+                transition:0.17s;
+            }
+            #characterRed{
+                width:49px;
+                height:49px;
+                background:red;
+                border-radius: 50%;
+                border:2px solid black;
+            }
+            #bottom-controls{
+                width:100px;
+                margin:auto;
+            }
+            .fill{
+                width:50px;
+                height:50px;
+                border-radius:50%;
+            }
+            /*
+                animation:fall6red 2s ease-in;
+                animation-fill-mode: forwards;
+            */
+
+            
+        </style>
+    </head>
+<body>
+<div id="display">
+    <div id="playerBoard">
+    <div onclick="fillSpot('A')" class="row rowA">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+    <div onclick="fillSpot('B')" class="row rowB">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+    <div onclick="fillSpot('C')" class="row rowC">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+    <div onclick="fillSpot('D')" class="row rowD">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+    <div onclick="fillSpot('E')" class="row rowE">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+    <div onclick="fillSpot('F')" class="row rowF">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+    <div onclick="fillSpot('G')" class="row rowG">
+        <div class = "num num1"><div class="fill"></div></div>
+        <div class = "num num2"><div class="fill"></div></div>
+        <div class = "num num3"><div class="fill"></div></div>
+        <div class = "num num4"><div class="fill"></div></div>
+        <div class = "num num5"><div class="fill"></div></div>
+        <div class = "num num6"><div class="fill"></div></div>
+    </div>
+</div>
+<div id="bottom-controls"><br>
+
+To Move:
+
+<br><br><div id="characterRed"></div>
+
+</div>
+</div>
+</div>
+<script>
+    var redToMove = true;
+    const R='red'
+    const Y='yellow'
+    var A,B,C,D,E,F,G
+    var numA = 6
+    var numB = 6
+    var numC = 6
+    var numD = 6
+    var numE = 6
+    var numF = 6
+    var numG = 6
+    var gridObj = {
+        "A":[],
+        "B":[],
+        "C":[],
+        "D":[],
+        "E":[],
+        "F":[],
+        "G":[],
+    }
+    var redWin=false
+    var yellowWin=false
+    var count =""
+    const regexRed=/(red.{0,1}){4}/
+    const regexYellow=/(yellow.{0,1}){4}/
+
+    /*
+    Values:
+    [0] is A
+    [6] is G
+    [0][0] is A1
+    [6][5] is G6
+    */
+
+    function checkDiagonalRed(){
+            
+            for (t=0;t<4;t++){
+                for (let j=0;j<3;j++){//checks 3 layers of height for 4x diagonal
+                    let gridArr=Object.keys(gridObj);   
+                    var countD=""
+                    var countC=""
+                    var ii = 3
+                    for(let i=0;i<4;i++){
+                        countD+=gridObj[gridArr[i+t]][i+j]
+                    if (regexRed.test(countD)==true){
+                        redWin=true
+                        break
+                    } else {redWin=false}
+                    }
+                    if (redWin==true){
+                        
+                        break}
+                    for(let i=0;i<4;i++){
+                        countC+=gridObj[gridArr[i+t]][ii+j]
+                        ii--
+                    if (regexRed.test(countC)==true){
+                        redWin=true 
+                        
+                        break
+                    } else {redWin=false}
+                    }
+    
+                    if (redWin==true){
+                        
+                        break}
+                   
+                    
+                }
+                if (redWin==true){
+                        alert("Red Wins!")
+                        break}
+            }
+               
+            
+                
+                
+                
+                //iterate 4 times, restart and add1, then do this 4 times total//
+                //Then, the top row of code must iterate 3 times to check for a win.
+                //perhaps a total of 3 different for loops
+                //END check diagonal
+            }
+    function checkDiagonalYellow(){
+                
+                for (t=0;t<4;t++){
+                    for (let j=0;j<3;j++){//checks 3 layers of height for 4x diagonal
+                        let gridArr=Object.keys(gridObj);   
+                        var countD=""
+                        var countC=""
+                        var ii = 3
+                        for(let i=0;i<4;i++){
+                            countD+=gridObj[gridArr[i+t]][i+j]
+                        if (regexYellow.test(countD)==true){
+                            yellowWin=true
+                            break
+                        } else {yellowWin=false}
+                        }
+                        if (yellowWin==true){
+                            
+                            break}
+                        for(let i=0;i<4;i++){
+                            countC+=gridObj[gridArr[i+t]][ii+j]
+                            ii--
+                        if (regexYellow.test(countC)==true){
+                            yellowWin=true 
+                            
+                            break
+                        } else {yellowWin=false}
+                        }
+        
+                        if (yellowWin==true){
+                            
+                            break}
+                       
+                        
+                    }
+                    if (yellowWin==true){
+                            alert("Yellow Wins!")
+                            break}
+                }
+                    
+                
+                    
+                    
+                    
+                    //iterate 4 times, restart and add1, then do this 4 times total//
+                    //Then, the top row of code must iterate 3 times to check for a win.
+                    //perhaps a total of 3 different for loops
+                    //END check diagonal
+                }                 
+    function checkWinVert(){
+            
+            for(let i in gridObj){
+                let redMatch=gridObj[i].toString();
+                if (regexRed.test(redMatch)==true){
+                    redWin=true
+                    alert("Red Wins!")
+                    break;
+                } else {redWin=false}
+            }
+            for(let i in gridObj){
+                let yellowMatch=gridObj[i].toString();
+                let regexYellow=/(yellow.*){4}/g
+                if (regexYellow.test(yellowMatch)==true){
+                    yellowWin=true
+                    alert("Yellow Wins!")
+                    break;
+                }
+            }
+           
+        }
+    function checkWinHor(){
+            
+            for (j=0;j<5;j++)
+            {count =""
+            for (i in gridObj){
+                count += gridObj[i][j]}
+                if (regexRed.test(count)==true){
+                    redWin=true
+                    alert("Red Wins!")
+                    break
+                } else {redWin=false}
+                
+            }
+            for (j=0;j<5;j++)
+            {count =""
+            for (i in gridObj){
+                count += gridObj[i][j]}
+                if (regexYellow.test(count)==true){
+                    yellowWin=true
+                    alert("Yellow Wins!")
+                    break
+                } else {yellowWin=false}
+                
+            }
+            
+        }
+    function redOrYellow(){
+            
+            
+            if(redToMove===true){
+                
+                document.getElementById("characterRed").style="background:yellow"
+                
+                redToMove=false
+            }else if(redToMove===false){
+                
+                document.getElementById("characterRed").style="background:red;"
+                redToMove=true;
+            }
+        }
+        $(".num").hover(function(){
+            if(redToMove===true){
+                $(this).css("background","pink")
+            }else if(redToMove===false){
+                $(this).css("background","lightgoldenrodyellow")
+            }
+        })
+        $(".num").click(function(){
+            if(redToMove===true){
+                $(this).css("background","lightgoldenrodyellow")
+            }else if(redToMove===false){
+                $(this).css("background","pink")
+            }
+        })
+        $(".num").mouseleave(function(){
+                $(this).css("background","white")
+        })      
+    function fillSpot(char){
+        
+        let numFill = ".row"+char+" .num"+eval("num"+char)+" .fill"
+        eval("num"+char+"-=1")
+        
+       
+        if (redToMove==true){
+        $(numFill).css({
+            "animation":"fall6red 2s ease-in",
+            "animation-fill-mode": "forwards"
+        })
+        gridObj[char].push(R)
+        } else {
+            $(numFill).css({
+            "animation":"fall6yellow 2s ease-in",
+            "animation-fill-mode": "forwards"
+        })
+        gridObj[char].push(Y)
+        }
+        
+        if(gridObj[char].length>6){gridObj[char].pop()}
+        redOrYellow()
+
+        checkDiagonalRed()
+        if(redWin == true | yellowWin == true)
+        {resetGame()
+        return}
+        checkDiagonalYellow()
+        if(redWin == true | yellowWin == true)
+        {resetGame()
+        return}
+        
+        checkWinVert()
+        if(redWin == true | yellowWin == true)
+        {resetGame()
+        return}
+      
+        checkWinHor()
+        if(redWin == true | yellowWin == true)
+        {resetGame()
+        return}
+       
+        
+        
+        
+    }
+    function resetGame(){  
+       //I need ".rowA .num1 .fill" for every single one to be background:white;//
+       let gridArr=Object.keys(gridObj)
+       for (a=0;a<gridArr.length;a++){
+           for(let i=1;i<7;i++){
+       let numFill = ".row"+gridArr[a]+" .num"+i+" .fill"
+       console.log(numFill)
+       document.querySelector(numFill).style="background:white"
+       }
+       } 
+        redToMove = false;
+        redOrYellow()
+        numA = 6
+        numB = 6
+        numC = 6
+        numD = 6
+        numE = 6
+        numF = 6
+        numG = 6
+        redWin=false
+        yellowWin=false
+        count =""
+        gridObj = {
+        "A":[],
+        "B":[],
+        "C":[],
+        "D":[],
+        "E":[],
+        "F":[],
+        "G":[],
+        }
+        
+    }
+        
+
+
+ </script>
+</body>
+</html>
